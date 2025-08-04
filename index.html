@@ -1,29 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>musicbook</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #111;
-            color: #eee;
-            text-align: center;
-            padding-top: 100px;
-        }
-        a {
-            display: block;
-            margin: 20px;
-            color: #ffcc00;
-            font-size: 20px;
-            text-decoration: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>musicbook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      background: url('assets/background.jpg') repeat;
+      background-size: 110%;
+      animation: moveBackground 60s linear infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    @keyframes moveBackground {
+      0%   { background-position: 0 0; }
+      50%  { background-position: 20px 20px; }
+      100% { background-position: 0 0; }
+    }
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 15px;
+      max-width: 95%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .logo {
+      display: block;
+      width: 120px;
+      margin: 0 auto 20px;
+    }
+    .lang-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .lang-button {
+      margin: 5px;
+      padding: 12px 24px;
+      font-size: 1.1em;
+      border-radius: 6px;
+      border: none;
+      background-color: #fff;
+      color: #111;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .lang-button:hover {
+      background-color: #eee;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 20px 0;
+    }
+    .manifest-text {
+      margin: 20px 0;
+      font-size: 1.1em;
+    }
+    .pdf-link, .audio-button {
+      margin: 15px;
+      padding: 12px 24px;
+      font-size: 1.1em;
+      border-radius: 6px;
+      border: none;
+      background-color: #ffcc00;
+      color: #111;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+    .pdf-link:hover, .audio-button:hover {
+      background-color: #ffd633;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.85em;
+      color: #bbb;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+      .manifest-text,
+      .lang-button,
+      .pdf-link,
+      .audio-button {
+        font-size: 1em;
+        padding: 10px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to musicbook</h1>
-    <a href="ru/">📘 На русском</a>
-    <a href="en/">📗 In English</a>
-    <a href="es/">📙 En español</a>
+  <div class="overlay">
+    <!-- Центрированный логотип -->
+    <img class="logo" src="assets/logo.png" alt="musicbook logo">
+
+    <!-- Кнопки выбора языка (теперь 4) -->
+    <div class="lang-buttons">
+      <button class="lang-button" onclick="changeLanguage('ru')">Русский</button>
+      <button class="lang-button" onclick="changeLanguage('en')">English</button>
+      <button class="lang-button" onclick="changeLanguage('es')">Español</button>
+      <button class="lang-button" onclick="changeLanguage('zh')">中文</button>
+    </div>
+
+    <!-- Динамический заголовок -->
+    <h1 id="main-title"><em>a genre of the 21st century</em></h1>
+
+    <!-- Текст манифеста -->
+    <div class="manifest-text" id="manifest-text">
+      A new genre where literature becomes music. Select a language to read the manifesto.
+    </div>
+
+    <!-- Ссылка на PDF -->
+    <a id="pdf-link" class="pdf-link" href="en/musicbook en.pdf" download>
+      📄 Download Manifesto (PDF)
+    </a>
+
+    <!-- Кнопка аудио-превью -->
+    <button class="audio-button"
+      onmouseenter="playPreview()"
+      onmouseleave="stopPreview()">
+      🎧 Hover to preview sound
+    </button>
+
+    <div class="footer">
+      &copy; 2025 musicbook — A genre where literature becomes music
+    </div>
+  </div>
+
+  <!-- Аудио-превью -->
+  <audio id="preview" preload="auto">
+    <source id="preview-src" src="en/musicbook en.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const headings = {
+      ru: "<em>жанр XXI века</em>",
+      en: "<em>a genre of the 21st century</em>",
+      es: "<em>un género del siglo XXI</em>",
+      zh: "<em>二十一世纪的艺术体裁</em>"
+    };
+    const texts = {
+      ru: "Музыкальный жанр, где литература становится звуком. Читайте манифест на русском.",
+      en: "A new genre where literature becomes music. Read the manifesto in English.",
+      es: "Un género donde la literatura se convierte en música. Lee el manifiesto en español.",
+      zh: "一个新的体裁，让文学成为音乐。阅读中文版宣言。"
+    };
+    const audios = {
+      ru: "ru/musicbook.mp3",
+      en: "en/musicbook en.mp3",
+      es: "es/musicbook es.mp3",
+      zh: "zh/musicbook zh.mp3"
+    };
+    const pdfs = {
+      ru: "ru/musicbook ru.pdf",
+      en: "en/musicbook en.pdf",
+      es: "es/musicbook es.pdf",
+      zh: "zh/musicbook zh.pdf"
+    };
+    function changeLanguage(lang) {
+      document.getElementById("main-title").innerHTML = headings[lang];
+      document.getElementById("manifest-text").textContent = texts[lang];
+      document.getElementById("preview-src").src = audios[lang];
+      document.getElementById("pdf-link").href = pdfs[lang];
+      document.getElementById("preview").load();
+    }
+    function playPreview() {
+      const audio = document.getElementById("preview");
+      audio.currentTime = 5;
+      audio.play();
+    }
+    function stopPreview() {
+      const audio = document.getElementById("preview");
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  </script>
 </body>
 </html>
