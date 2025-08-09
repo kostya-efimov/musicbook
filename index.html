@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>musicbook</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
   <style>
+    /* фиксируем порядок слева-направо, чтобы ничего не прыгало */
+    :root, body, .overlay, .lang-buttons { direction: ltr; }
+
     body {
       margin: 0;
       padding: 0;
@@ -25,6 +28,7 @@
       50%  { background-position: 20px 20px; }
       100% { background-position: 0 0; }
     }
+
     .overlay {
       background-color: rgba(0, 0, 0, 0.6);
       padding: 40px;
@@ -33,18 +37,30 @@
       width: 100%;
       box-sizing: border-box;
     }
+
     .logo {
       display: block;
       width: 120px;
       margin: 0 auto 20px;
     }
+
+    /* Кнопки языка: одинаковые размеры + центрирование текста */
     .lang-buttons {
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-height: 56px;
       margin-bottom: 20px;
     }
     .lang-button {
-      margin: 5px;
-      padding: 12px 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 160px;          /* одинаковая ширина */
+      height: 48px;          /* одинаковая высота */
+      padding: 0 12px;       /* внутренний отступ по бокам */
       font-size: 1.1em;
       border-radius: 6px;
       border: none;
@@ -52,10 +68,15 @@
       color: #111;
       cursor: pointer;
       transition: background 0.3s ease;
+      unicode-bidi: plaintext; /* корректное направление внутри кнопки */
+      direction: ltr;          /* порядок самих кнопок фиксирован */
+      white-space: nowrap;     /* запрещаем перенос строк */
     }
-    .lang-button:hover {
-      background-color: #eee;
+    .lang-button:hover { background-color: #eee; }
+    .lang-button[lang="ar"] {
+      font-family: "Segoe UI","Noto Sans Arabic","Noto Naskh Arabic",sans-serif;
     }
+
     h1 {
       font-size: 2.5em;
       margin: 20px 0;
@@ -64,6 +85,7 @@
       margin: 20px 0;
       font-size: 1.1em;
     }
+
     .pdf-link, .audio-button {
       margin: 15px;
       padding: 12px 24px;
@@ -77,46 +99,43 @@
       display: inline-block;
       transition: background 0.3s ease;
     }
-    .pdf-link:hover, .audio-button:hover {
-      background-color: #ffd633;
-    }
+    .pdf-link:hover, .audio-button:hover { background-color: #ffd633; }
+
     .footer {
       margin-top: 40px;
       font-size: 0.85em;
       color: #bbb;
     }
+
     @media (max-width: 600px) {
-      h1 {
-        font-size: 1.8em;
-      }
-      .manifest-text,
-      .lang-button,
-      .pdf-link,
-      .audio-button {
-        font-size: 1em;
-        padding: 10px 20px;
-      }
+      h1 { font-size: 1.8em; }
+      .manifest-text, .pdf-link, .audio-button { font-size: 1em; padding: 10px 20px; }
+      .lang-button { width: 130px; height: 44px; font-size: 1em; } /* компактнее на мобильных */
+      .lang-buttons { min-height: 48px; }
     }
   </style>
 </head>
 <body>
   <div class="overlay">
-    <!-- Центрированный логотип -->
-    <img class="logo" src="assets/logo.png" alt="musicbook logo">
+    <!-- Логотип -->
+    <img class="logo" src="assets/logo.png" alt="musicbook logo" />
 
-    <!-- Кнопки выбора языка (теперь 4) -->
+    <!-- Кнопки выбора языка (одинаковые размеры) -->
     <div class="lang-buttons">
-      <button class="lang-button" onclick="changeLanguage('ru')">Русский</button>
-      <button class="lang-button" onclick="changeLanguage('en')">English</button>
-      <button class="lang-button" onclick="changeLanguage('es')">Español</button>
-      <button class="lang-button" onclick="changeLanguage('zh')">中文</button>
+      <button class="lang-button" onclick="changeLanguage('ru')" lang="ru" dir="auto">Русский</button>
+      <button class="lang-button" onclick="changeLanguage('en')" lang="en" dir="auto">English</button>
+      <button class="lang-button" onclick="changeLanguage('es')" lang="es" dir="auto">Español</button>
+      <button class="lang-button" onclick="changeLanguage('zh')" lang="zh" dir="auto">中文</button>
+      <button class="lang-button" onclick="changeLanguage('hi')" lang="hi" dir="auto">हिन्दी</button>
+      <button class="lang-button" onclick="changeLanguage('ar')" lang="ar" dir="auto">العربية</button>
+      <button class="lang-button" onclick="changeLanguage('fr')" lang="fr" dir="auto">Français</button>
     </div>
 
     <!-- Динамический заголовок -->
-    <h1 id="main-title"><em>a genre of the 21st century</em></h1>
+    <h1 id="main-title" dir="ltr"><em>a genre of the 21st century</em></h1>
 
-    <!-- Текст манифеста -->
-    <div class="manifest-text" id="manifest-text">
+    <!-- Теглайн -->
+    <div class="manifest-text" id="manifest-text" dir="ltr">
       A new genre where literature becomes music. Select a language to read the manifesto.
     </div>
 
@@ -139,7 +158,7 @@
 
   <!-- Аудио-превью -->
   <audio id="preview" preload="auto">
-    <source id="preview-src" src="en/musicbook en.mp3" type="audio/mpeg">
+    <source id="preview-src" src="en/musicbook en.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
@@ -147,33 +166,61 @@
       ru: "<em>жанр XXI века</em>",
       en: "<em>a genre of the 21st century</em>",
       es: "<em>un género del siglo XXI</em>",
-      zh: "<em>二十一世纪的艺术体裁</em>"
+      zh: "<em>二十一世纪的艺术体裁</em>",
+      hi: "<em>इक्कीसवीं सदी की एक विधा</em>",
+      ar: "<em>نوع فني من القرن الحادي والعشرين</em>",
+      fr: "<em>un genre du XXIᵉ siècle</em>"
     };
+
     const texts = {
       ru: "Музыкальный жанр, где литература становится звуком. Читайте манифест на русском.",
       en: "A new genre where literature becomes music. Read the manifesto in English.",
       es: "Un género donde la literatura se convierte en música. Lee el manifiesto en español.",
-      zh: "一个新的体裁，让文学成为音乐。阅读中文版宣言。"
+      zh: "一个新的体裁，让文学成为音乐。阅读中文版宣言。",
+      hi: "एक नया жанр, जहाँ साहित्य संगीत बन जाता है। हिन्दी मैनिफेस्टो पढ़ें。",
+      ar: "نوع جديد تتحول فيه الأدب إلى موسيقى. اقرأ البيان بالعربية.",
+      fr: "Un nouveau genre où la littérature devient musique. Lisez le manifeste en français."
     };
+
     const audios = {
       ru: "ru/musicbook.mp3",
       en: "en/musicbook en.mp3",
       es: "es/musicbook es.mp3",
-      zh: "zh/musicbook zh.mp3"
+      zh: "zh/musicbook zh.mp3",
+      hi: "hi/musicbook hi.mp3",
+      ar: "ar/musicbook ar.mp3",
+      fr: "fr/musicbook fr.mp3"
     };
+
     const pdfs = {
       ru: "ru/musicbook ru.pdf",
       en: "en/musicbook en.pdf",
       es: "es/musicbook es.pdf",
-      zh: "zh/musicbook zh.pdf"
+      zh: "zh/musicbook zh.pdf",
+      hi: "hi/musicbook hi.pdf",
+      ar: "ar/musicbook ar.pdf",
+      fr: "fr/musicbook fr.pdf"
     };
+
     function changeLanguage(lang) {
-      document.getElementById("main-title").innerHTML = headings[lang];
-      document.getElementById("manifest-text").textContent = texts[lang];
+      const titleEl = document.getElementById("main-title");
+      const textEl  = document.getElementById("manifest-text");
+
+      titleEl.innerHTML = headings[lang];
+      textEl.textContent = texts[lang];
+
+      // RTL применяем только к заголовку/описанию
+      const isRTL = (lang === 'ar');
+      titleEl.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+      textEl.setAttribute('dir',  isRTL ? 'rtl' : 'ltr');
+
       document.getElementById("preview-src").src = audios[lang];
-      document.getElementById("pdf-link").href = pdfs[lang];
+      document.getElementById("pdf-link").href   = pdfs[lang];
       document.getElementById("preview").load();
+
+      document.documentElement.lang = lang; // для SEO
     }
+
     function playPreview() {
       const audio = document.getElementById("preview");
       audio.currentTime = 5;
